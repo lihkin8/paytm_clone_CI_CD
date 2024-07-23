@@ -50,7 +50,10 @@ jobs:
             sudo docker pull nikhilshastry99/paytm-clone-ci-cd:latest
             sudo docker stop web-app || true
             sudo docker rm web-app || true
-            sudo docker run -d --restart always --name web-app -p 3005:3000 -e DATABASE_URL=${{ secrets.DATABASE_URL }} nikhilshastry99/paytm-clone-ci-cd:latest
+            sudo docker run -d --restart always --name web-app -p 3005:3000 \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              nikhilshastry99/paytm-clone-ci-cd:latest
 
       - name: Health Check
         uses: appleboy/ssh-action@master
