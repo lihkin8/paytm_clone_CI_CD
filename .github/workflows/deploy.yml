@@ -29,6 +29,17 @@ jobs:
       - name: Verify Pushed Image
         run: docker pull nikhilshastry99/paytm-clone-ci-cd:latest # Replace with your Docker Hub username and repository
 
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add SSH key to ssh-agent
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -39,4 +50,13 @@ jobs:
             sudo docker pull nikhilshastry99/paytm-clone-ci-cd:latest
             sudo docker stop web-app || true
             sudo docker rm web-app || true
-            sudo docker run -d --name web-app -p 3005:3000 nikhilshastry99/paytm-clone-ci-cd:latest
+            sudo docker run -d --restart always --name web-app -p 3005:3000 -e DATABASE_URL=${{ secrets.DATABASE_URL }} nikhilshastry99/paytm-clone-ci-cd:latest
+
+      - name: Health Check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            curl -f http://localhost:3005 || exit 1
