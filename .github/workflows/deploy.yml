@@ -54,7 +54,10 @@ jobs:
             sudo docker run -d --restart always --name web-app -p 3005:3000 \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
               -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
               nikhilshastry99/paytm-clone-ci-cd:latest
+            sleep 10
+            sudo docker logs web-app
 
       - name: Health Check
         uses: appleboy/ssh-action@master
