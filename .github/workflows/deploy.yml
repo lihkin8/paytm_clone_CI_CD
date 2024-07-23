@@ -47,6 +47,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull nikhilshastry99/paytm-clone-ci-cd:latest
             sudo docker stop web-app || true
             sudo docker rm web-app || true
